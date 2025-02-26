@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:week_3_blabla_project/screens/ride_pref/widgets/location_picker.dart';
+import 'package:week_3_blabla_project/screens/ride_pref/widgets/results_search_screnn.dart';
 import 'package:week_3_blabla_project/theme/theme.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
@@ -35,7 +36,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-  // Open the SearchScreen to select a location (either departure or arrival)
+  // Open the LocationPickerScreen to select a location (either departure or arrival)
   void _openSearchScreen(String type) async {
     Location? selectedLocation = await Navigator.push(
       context,
@@ -66,6 +67,29 @@ class _RidePrefFormState extends State<RidePrefForm> {
       departure = arrival;
       arrival = temp;
     });
+  }
+
+  // Go to the RideScreen with the selected preferences
+  void _goToRideScreen() {
+    if (departure != null && arrival != null) {
+      // If departure and arrival are selected, go to the RideScreen with the selected data
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RideScreen(
+            departure: departure!,
+            arrival: arrival!,
+            departureDate: departureDate,
+            requestedSeats: requestedSeats,
+          ),
+        ),
+      );
+    } else {
+      // Handle the case when departure or arrival is not selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select departure and arrival locations!')),
+      );
+    }
   }
 
   @override
@@ -237,9 +261,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
           // Search Button
           ElevatedButton(
-            onPressed: () {
-              // Implement search functionality here
-            },
+            onPressed: _goToRideScreen, // Implement search functionality here
             style: ElevatedButton.styleFrom(
               backgroundColor: BlaColors.primary,
               padding: EdgeInsets.symmetric(vertical: 15),
