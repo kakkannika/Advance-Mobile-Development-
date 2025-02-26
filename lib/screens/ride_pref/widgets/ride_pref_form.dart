@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:week_3_blabla_project/screens/ride_pref/widgets/location_picker.dart';
 import 'package:week_3_blabla_project/theme/theme.dart';
-
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
 
-/// A Ride Preference Form is a view to select:
-///   - A departure location
-///   - An arrival location
-///   - A date
-///   - A number of seats
-/// The form can be created with an existing RidePref (optional).
-///
 class RidePrefForm extends StatefulWidget {
   final RidePref? initRidePref;
 
@@ -42,30 +35,31 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-  void _updateDeparture(Location location) {
-    setState(() {
-      departure = location;
-    });
+  // Open the SearchScreen to select a location (either departure or arrival)
+  void _openSearchScreen(String type) async {
+    Location? selectedLocation = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LocationPickerScreen(
+          title: type == 'departure' ? 'Select Departure' : 'Select Arrival',
+          initialLocation: type == 'departure' ? departure : arrival,
+        ),
+      ),
+    );
+
+    // Update the location based on the type (departure or arrival)
+    if (selectedLocation != null) {
+      setState(() {
+        if (type == 'departure') {
+          departure = selectedLocation;
+        } else if (type == 'arrival') {
+          arrival = selectedLocation;
+        }
+      });
+    }
   }
 
-  void _updateArrival(Location location) {
-    setState(() {
-      arrival = location;
-    });
-  }
-
-  void _updateDepartureDate(DateTime date) {
-    setState(() {
-      departureDate = date;
-    });
-  }
-
-  void _updateRequestedSeats(int seats) {
-    setState(() {
-      requestedSeats = seats;
-    });
-  }
-
+  // Swap departure and arrival locations
   void _swapLocations() {
     Location? temp = departure;
     setState(() {
@@ -78,7 +72,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
   Widget build(BuildContext context) {
     // Get the screen width and height using MediaQuery
     double screenWidth = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth < 600 ? 14 : 16; 
+    double fontSize = screenWidth < 600 ? 14 : 16;
 
     return Container(
       margin: EdgeInsets.all(screenWidth < 600 ? 8 : BlaSpacings.m),
@@ -100,76 +94,81 @@ class _RidePrefFormState extends State<RidePrefForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Departure Location
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: BlaColors.greyLight,
-                  width: 1.0,
-                ),
-              ),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.circle_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        departure != null ? departure!.name : "Toulouse",
-                        style: BlaTextStyles.body.copyWith(
-                          fontFamily: 'Eesti',
-                          fontSize: fontSize,
-                          color: Colors.blueGrey,
-                          
-                        ),
-                      ),
-                    ],
+          GestureDetector(
+            onTap: () => _openSearchScreen('departure'), // Open SearchScreen for Departure
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: BlaColors.greyLight,
+                    width: 1.0,
                   ),
                 ),
-                IconButton(
-                  onPressed: _swapLocations,
-                  icon: Icon(Icons.swap_vert, color: BlaColors.primary),
-                ),
-              ],
+              ),
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.circle_outlined),
+                        SizedBox(width: 10),
+                        Text(
+                          departure != null ? departure!.name : "Select Departure",
+                          style: BlaTextStyles.body.copyWith(
+                            fontFamily: 'Eesti',
+                            fontSize: fontSize,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _swapLocations,
+                    icon: Icon(Icons.swap_vert, color: BlaColors.primary),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
 
           // Arrival Location
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: BlaColors.greyLight,
-                  width: 1.0,
-                ),
-              ),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.circle_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        arrival != null ? arrival!.name : "Bordeaux, France",
-                        style: BlaTextStyles.body.copyWith(
-                          fontFamily: 'Eesti',
-                          fontSize: fontSize,
-                          color: Colors.blueGrey,
-                        ),
-                      ),
-                    ],
+          GestureDetector(
+            onTap: () => _openSearchScreen('arrival'), // Open SearchScreen for Arrival
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: BlaColors.greyLight,
+                    width: 1.0,
                   ),
                 ),
-              ],
+              ),
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.circle_outlined),
+                        SizedBox(width: 10),
+                        Text(
+                          arrival != null ? arrival!.name : "Select Arrival",
+                          style: BlaTextStyles.body.copyWith(
+                            fontFamily: 'Eesti',
+                            fontSize: fontSize,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
