@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../model/ride/locations.dart';
 import '../../../theme/theme.dart';
 
-class RideScreen extends StatelessWidget {
+class RideScreen extends StatefulWidget {
   final Location departure;
   final Location arrival;
   final DateTime departureDate;
   final int requestedSeats;
 
-  // Constructor to receive the selected ride preferences
   const RideScreen({
     super.key,
     required this.departure,
@@ -18,6 +17,40 @@ class RideScreen extends StatelessWidget {
   });
 
   @override
+  _RideScreenState createState() => _RideScreenState();
+}
+
+class _RideScreenState extends State<RideScreen> {
+  TextEditingController _searchController = TextEditingController();
+  List<Location> _searchResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchResults = _filterLocations(_searchController.text);
+    });
+  }
+
+  List<Location> _filterLocations(String query) {
+    // Implement your search logic here
+    // For example, filter the locations based on the query
+    // This is just a placeholder implementation
+    return [];
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -25,6 +58,7 @@ class RideScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
             // Back Button with Border and Shadow
             Container(
               decoration: BoxDecoration(
@@ -34,21 +68,17 @@ class RideScreen extends StatelessWidget {
                   BoxShadow(
                     color: Colors.grey,
                     blurRadius: 2,
-                    
                   ),
                 ],
               ),
-              
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+                children: [
                   IconButton(
-                  
                     icon: Icon(Icons.arrow_back_ios),
                     onPressed: () => Navigator.pop(context),
-                    color: Colors.grey, 
+                    color: Colors.grey,
                   ),
-                  
                 ],
               ),
             ),
@@ -68,25 +98,25 @@ class RideScreen extends StatelessWidget {
                 children: [
                   // Departure
                   Text(
-                    'Departure: ${departure.name}, ${departure.country.name}',
+                    'Departure: ${widget.departure.name}, ${widget.departure.country.name}',
                     style: BlaTextStyles.body.copyWith(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   // Arrival
                   Text(
-                    'Arrival: ${arrival.name}, ${arrival.country.name}',
+                    'Arrival: ${widget.arrival.name}, ${widget.arrival.country.name}',
                     style: BlaTextStyles.body.copyWith(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   // Time
                   Text(
-                    'Time: ${departureDate.hour}:${departureDate.minute.toString().padLeft(2, '0')}',
+                    'Time: ${widget.departureDate.hour}:${widget.departureDate.minute.toString().padLeft(2, '0')}',
                     style: BlaTextStyles.body.copyWith(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   // Seats Available
                   Text(
-                    'Seats Available: $requestedSeats',
+                    'Seats Available: ${widget.requestedSeats}',
                     style: BlaTextStyles.body.copyWith(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
@@ -94,9 +124,18 @@ class RideScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Additional Information (if needed)
+            // Search Results
             Expanded(
-              child: Container(),
+              child: ListView.builder(
+                itemCount: _searchResults.length,
+                itemBuilder: (context, index) {
+                  final location = _searchResults[index];
+                  return ListTile(
+                    title: Text(location.name),
+                    subtitle: Text(location.country.name),
+                  );
+                },
+              ),
             ),
           ],
         ),

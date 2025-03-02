@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:week_3_blabla_project/screens/ride_pref/widgets/location_picker.dart';
-import 'package:week_3_blabla_project/screens/ride_pref/widgets/results_search_screnn.dart';
-import 'package:week_3_blabla_project/theme/theme.dart';
+import 'package:week_3_blabla_project/week3/screens/ride_pref/widgets/location_picker.dart';
+import 'package:week_3_blabla_project/week3/screens/ride_pref/widgets/results_search_screnn.dart';
+import 'package:week_3_blabla_project/week3/theme/theme.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
 
